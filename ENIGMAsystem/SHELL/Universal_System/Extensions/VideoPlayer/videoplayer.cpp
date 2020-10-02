@@ -77,6 +77,7 @@ static unsigned splash_get_height  = 480;
 #ifdef __APPLE__
   #ifdef __MACH__
      extern "C" const char *cocoa_window_get_contentview(const char *window);
+     extern "C" void cocoa_process_run_loop();
   #endif
 #endif
 
@@ -228,6 +229,11 @@ void splash_show_video(string fname, bool loop) {
             video_stop(video);
           }
         }
+      #endif
+      #ifdef __APPLE__
+        #ifdef __MACH__
+          cocoa_process_run_loop();
+        #endif
       #endif
     }
   }
