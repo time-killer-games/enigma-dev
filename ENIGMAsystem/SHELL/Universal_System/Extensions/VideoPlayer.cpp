@@ -93,15 +93,6 @@ EXPORTED_FUNCTION double video_is_playing(char *ind) {
   return enigma_user::video_is_playing(ind);
 }
 
-EXPORTED_FUNCTION double video_get_fullscreen(char *ind) {
-  return enigma_user::video_get_fullscreen(ind);
-}
-
-EXPORTED_FUNCTION double video_set_fullscreen(char *ind, double fullscreen) {
-  enigma_user::video_set_fullscreen(ind, (bool)fullscreen);
-  return 0;
-}
-
 EXPORTED_FUNCTION double video_get_volume_percent(char *ind) {
   return enigma_user::video_get_volume_percent(ind);
 }
