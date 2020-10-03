@@ -99,7 +99,7 @@ static bool splash_get_stop_key  = true;
     int actual_format, status;
     unsigned long nitems, bytes_after;
     int screen = XDefaultScreen(display);
-    window = RootWindow(display, screen);
+    Window window = RootWindow(display, screen);
     filter_atom = XInternAtom(display, "_NET_ACTIVE_WINDOW", True);
     status = XGetWindowProperty(display, window, filter_atom, 0, 1000, False,
     AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, &prop);
