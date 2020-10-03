@@ -64,11 +64,6 @@ EXPORTED_FUNCTION double splash_set_border(double border) {
   return 0;
 }
 
-EXPORTED_FUNCTION double splash_set_interupt(double interupt) {
-  enigma_user::splash_set_interupt((bool)interupt);
-  return 0;
-}
-
 EXPORTED_FUNCTION double splash_set_stop_mouse(double stop) {
   enigma_user::splash_set_stop_mouse((bool)stop);
   return 0;
@@ -99,12 +94,6 @@ EXPORTED_FUNCTION double splash_show_video(char *fname, double loop) {
   return 0;
 }
 
-EXPORTED_FUNCTION char *splash_get_video() {
-  static string result;
-  result = enigma_user::splash_get_video();
-  return (char *)result.c_str();
-}
-
 EXPORTED_FUNCTION char *video_add(char *fname) {
   static string result;
   result = enigma_user::video_add(fname);
@@ -126,23 +115,17 @@ EXPORTED_FUNCTION double video_set_option_string(char *ind, char *option, char *
   return 0;
 }
 
-EXPORTED_FUNCTION char *video_get_property_string(char *ind, char *property) {
-  static string result;
-  result = enigma_user::video_get_property_string(ind, property);
-  return (char *)result.c_str();
-}
-
 EXPORTED_FUNCTION double video_play(char *ind) {
   enigma_user::video_play(ind);
   return 0;
 }
 
 EXPORTED_FUNCTION double video_is_paused(char *ind) {
-  return enigma_user::video_is_paused(ind);	
+  return enigma_user::video_is_paused(ind);
 }
 
 EXPORTED_FUNCTION double video_is_playing(char *ind) {
-  return enigma_user::video_is_playing(ind);	
+  return enigma_user::video_is_playing(ind);
 }
 
 EXPORTED_FUNCTION double video_get_fullscreen(char *ind) {
@@ -185,11 +168,6 @@ EXPORTED_FUNCTION double video_pause(char *ind) {
 
 EXPORTED_FUNCTION double video_stop(char *ind) {
   enigma_user::video_stop(ind);
-  return 0;
-}
-
-EXPORTED_FUNCTION double video_seek(char *ind, double seek) {
-  enigma_user::video_seek(ind, seek);
   return 0;
 }
 
