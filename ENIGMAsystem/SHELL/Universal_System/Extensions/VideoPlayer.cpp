@@ -34,48 +34,13 @@ using std::string;
 #define EXPORTED_FUNCTION extern "C" __attribute__((visibility("default"))) 
 #endif
 
-EXPORTED_FUNCTION double splash_set_main(double main) {
-  enigma_user::splash_set_main(main);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_caption(char *cap) {
-  enigma_user::splash_set_caption(cap);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_fullscreen(double full) {
-  enigma_user::splash_set_fullscreen((bool)full);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_size(double w, double h) {
-  enigma_user::splash_set_size((unsigned)w, (unsigned)h);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_position(double x, double y) {
-  enigma_user::splash_set_position((int)x, (int)y);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_border(double border) {
-  enigma_user::splash_set_border((bool)border);
-  return 0;
-}
-
 EXPORTED_FUNCTION double splash_set_stop_mouse(double stop) {
   enigma_user::splash_set_stop_mouse((bool)stop);
   return 0;
 }
 
-EXPORTED_FUNCTION double splash_set_scale(double scale) {
-  enigma_user::splash_set_scale((unsigned)scale);
-  return 0;
-}
-
-EXPORTED_FUNCTION double splash_set_adapt(double adapt) {
-  enigma_user::splash_set_adapt((bool)adapt);
+EXPORTED_FUNCTION double splash_set_stop_key(double stop) {
+  enigma_user::splash_set_stop_key((bool)stop);
   return 0;
 }
 
