@@ -135,6 +135,10 @@ EXPORTED_FUNCTION double video_get_height(char *ind) {
   return enigma_user::video_get_height(ind);
 }
 
+EXPORTED_FUNCTION double video_get_position(char *ind) {
+  return enigma_user::video_get_position(ind);
+}
+
 EXPORTED_FUNCTION double video_get_duration(char *ind) {
   return enigma_user::video_get_duration(ind);
 }
