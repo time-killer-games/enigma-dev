@@ -37,6 +37,10 @@
 
 #include "videoplayer.h"
 
+#ifndef VIDPLAYER_SELF_CONTAINED
+#include "Platforms/General/PFwindow.h"
+#endif
+
 #ifdef _WIN32
   #include <windows.h>
 #endif
@@ -55,17 +59,16 @@ struct VideoData {
 };
 
 static std::map<string, VideoData> videos;
-static string video;
-
-static string splash_get_window    = "-1";
-static int splash_get_volume       = 100;
-
-static bool splash_get_stop_mouse  = true;
-static bool splash_get_stop_key    = true;
+static string video, mpv_wid      = "0";
+static string splash_get_window   = "0";
+static int splash_get_volume      = 100;
+static bool splash_get_stop_mouse = true;
+static bool splash_get_stop_key   = true;
 
 #ifdef __APPLE__
   #ifdef __MACH__
      extern "C" void cocoa_show_cursor();
+     extern "C" const char *cocoa_prefer_global_windowid(const char *window);
      extern "C" const char *cocoa_window_get_contentview(const char *window);
      extern "C" void cocoa_process_run_loop(const char *video, 
        const char *window, bool close_mouse, bool close_key);
@@ -82,6 +85,17 @@ static void video_loop(string ind, mpv_handle *mpv) {
   enigma_user::video_stop(ind);
   mpv_terminate_destroy(mpv);
 }
+
+namespace enigma {
+
+void videoplayer_init() {
+  #ifndef VIDPLAYER_SELF_CONTAINED
+  mpv_wid = enigma_user::window_identfier();
+  #endif
+  enigma_user::splash_set_window(mpv_wid);
+}
+
+} // namespace enigma
 
 namespace enigma_user {
 
@@ -106,7 +120,8 @@ void splash_show_video(string fname, bool loop) {
   string wid, looping;
   #ifdef __APPLE__
     #ifdef __MACH__
-      wid = cocoa_window_get_contentview(splash_get_window.c_str());
+      wid = cocoa_prefer_global_windowid(splash_get_window.c_str());
+      wid = cocoa_window_get_contentview(wid.c_str());
     #endif
   #else
     wid = splash_get_window;
@@ -202,11 +217,11 @@ void splash_show_video(string fname, bool loop) {
 
 string video_add(string fname) {
   VideoData data;
-  data.mpv           = mpv_create();
-  data.window_id     = "0";
-  data.volume        = 100;
-  data.is_paused     = false;
-  data.is_playing    = false;
+  data.mpv        = mpv_create();
+  data.window_id  = mpv_wid;
+  data.volume     = 100;
+  data.is_paused  = false;
+  data.is_playing = false;
   videos.insert(std::make_pair(fname, data));
   return fname;
 }
@@ -268,6 +283,7 @@ void video_set_window_identifier(string ind, string wid) {
   wid = std::to_string(strtoull(wid.c_str(), NULL, 10));
   #ifdef __APPLE__
     #ifdef __MACH__
+      wid = cocoa_prefer_global_windowid(wid.c_str());
       wid = cocoa_window_get_contentview(wid.c_str());
     #endif
   #endif

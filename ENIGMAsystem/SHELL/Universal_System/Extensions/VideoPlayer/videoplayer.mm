@@ -46,6 +46,16 @@ void cocoa_show_cursor() {
   }
 }
 
+const char *cocoa_prefer_global_windowid(const char *window) {
+  unsigned long long ull = strtoull(window, NULL, 10);
+  if ([NSApp windowWithWindowNumber:(unsigned long)ull] != nil) {
+    return [[NSString stringWithFormat:@"%llu",
+      (unsigned long long)[NSApp windowWithWindowNumber:
+      (unsigned long)ull]] UTF8String];
+  }
+  return window;
+}
+
 void cocoa_process_run_loop(const char *video,
   const char *window, bool close_mouse, bool close_key) {
   [[NSRunLoop currentRunLoop] runUntilDate:
