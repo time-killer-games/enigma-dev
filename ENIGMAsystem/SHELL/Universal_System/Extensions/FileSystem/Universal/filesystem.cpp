@@ -131,6 +131,7 @@ namespace filesystem {
   std::uintmax_t fs_file_size(string fname) {
     std::error_code ec;
     if (!fs_file_exists(fname)) return 0;
+    fname = filesystem::fs_environment_expand_variables(fname);
     const fs::path path = fs::u8path(fname);
     std::uintmax_t result = fs::file_size(path, ec);
     return (ec.value() == 0) ? result : 0;
@@ -138,6 +139,7 @@ namespace filesystem {
 
   bool fs_file_exists(string fname) {
     std::error_code ec;
+    fname = filesystem::fs_environment_expand_variables(fname);
     const fs::path path = fs::u8path(fname);
     return (fs::exists(path, ec) && ec.value() == 0 && 
       (!fs::is_directory(path, ec)) && ec.value() == 0);
@@ -146,6 +148,7 @@ namespace filesystem {
   bool fs_file_delete(string fname) {
     std::error_code ec;
     if (!fs_file_exists(fname)) return false;
+    fname = filesystem::fs_environment_expand_variables(fname);
     const fs::path path = fs::u8path(fname);
     return (fs::remove(path, ec) && ec.value() == 0);
   }
@@ -153,6 +156,8 @@ namespace filesystem {
   bool fs_file_rename(string oldname, string newname) {
     std::error_code ec;
     if (!fs_file_exists(oldname)) return false;
+    oldname = filesystem::fs_environment_expand_variables(oldname);
+    newname = filesystem::fs_environment_expand_variables(newname);
     if (!fs_directory_exists(filename_path(newname)))
       fs_directory_create(filename_path(newname));
     const fs::path path1 = fs::u8path(oldname);
@@ -164,6 +169,8 @@ namespace filesystem {
   bool fs_file_copy(string fname, string newname) {
     std::error_code ec;
     if (!fs_file_exists(fname)) return false;
+    fname = filesystem::fs_environment_expand_variables(fname);
+    newname = filesystem::fs_environment_expand_variables(newname);
     if (!fs_directory_exists(filename_path(newname)))
       fs_directory_create(filename_path(newname));
     const fs::path path1 = fs::u8path(fname);
@@ -179,7 +186,7 @@ namespace filesystem {
     if (fs::exists(path)) {
       fs::directory_iterator end_itr;
       for (fs::directory_iterator dir_ite(path); dir_ite != end_itr; dir_ite++) {
-        fs::path file_path(fs_filename_absolute(dir_ite->path().u8string()));
+        fs::path file_path = fs::u8path(fs_filename_absolute(dir_ite->path().u8string()));
         if (!fs::is_directory(dir_ite->status())) {
           result += fs_file_size(file_path.u8string());
         } else {
@@ -193,6 +200,7 @@ namespace filesystem {
   bool fs_directory_exists(string dname) {
     std::error_code ec;
     dname = filename_remove_slash(dname, false);
+    dname = fs_environment_expand_variables(dname);
     const fs::path path = fs::u8path(dname);
     return (fs::exists(path, ec) && ec.value() == 0 && 
       fs::is_directory(path, ec) && ec.value() == 0);
@@ -301,7 +309,7 @@ namespace filesystem {
       fs::directory_iterator end_itr;
       for (fs::directory_iterator dir_ite(path, ec); dir_ite != end_itr; dir_ite++) {
         if (ec.value() != 0) { break; }
-        fs::path file_path(fs_filename_absolute(dir_ite->path().u8string()));
+        fs::path file_path = fs::u8path(fs_filename_absolute(dir_ite->path().u8string()));
         if (!fs::is_directory(dir_ite->status(ec)) && ec.value() == 0) {
           result += file_path.u8string() + "\n";
         } else if (ec.value() == 0 && includedirs) {
