@@ -200,6 +200,13 @@ string pids_enum(bool trim_dir, bool trim_empty) {
   return pids;
 }
 
+enum PIDRES_SPECTYPE {
+  PIDRES_SPECNONE,
+  PIDRES_SPECFILE,
+  PIDRES_SPECPATH,
+  PIDRES_SPECBOTH
+};
+
 string pids_from_spec(string name, unsigned spec) {
   string pids;
   int cntp = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
