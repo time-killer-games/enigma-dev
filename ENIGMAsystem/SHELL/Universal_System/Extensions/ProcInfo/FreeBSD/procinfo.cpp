@@ -158,6 +158,36 @@ string pids_enum(bool trim_dir, bool trim_empty) {
   return pids;
 }
 
+enum PIDRES_SPECTYPE {
+  PIDRES_SPECNONE,
+  PIDRES_SPECFILE,
+  PIDRES_SPECPATH,
+  PIDRES_SPECBOTH
+};
+
+string pids_from_spec(string name, unsigned spec) {
+  string pids; int cntp;
+  struct kinfo_proc *proc_info = kinfo_getallproc(&cntp);
+  if (proc_info) {
+    for (size_t i = 0; i < cntp; i++) {
+      string exe;
+      if (spec == PIDRES_SPECFILE) 
+        exe = name_from_pid(proc_info[i].ki_pid);
+      if (spec == PIDRES_SPECPATH) 
+        exe = dir_from_pid(proc_info[i].ki_pid);
+      if (spec == PIDRES_SPECBOTH) 
+        exe = path_from_pid(proc_info[i].ki_pid);
+      if (name == exe || spec == PIDRES_SPECNONE)
+        pids += to_string(proc_info[i].ki_pid) + "|";
+    }
+  }
+  if (pids.back() == '|')
+    pids.pop_back();
+  pids += "\0";
+  free(proc_info);
+  return pids;
+}
+
 process_t ppid_from_pid(process_t pid) {
   process_t ppid;
   struct kinfo_proc *proc_info = kinfo_getproc(pid);

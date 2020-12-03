@@ -200,6 +200,30 @@ string pids_enum(bool trim_dir, bool trim_empty) {
   return pids;
 }
 
+string pids_from_spec(string name, unsigned spec) {
+  string pids;
+  int cntp = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+  vector<pid_t> proc_info(cntp);
+  std::fill(proc_info.begin(), proc_info.end(), 0);
+  proc_listpids(PROC_ALL_PIDS, 0, &proc_info[0], sizeof(pid_t) * cntp);
+  for (unsigned i = 0; i < cntp; i++) {
+    if (proc_info[i] == 0) { continue; }
+    string exe;
+    if (spec == PIDRES_SPECFILE) 
+      exe = name_from_pid(proc_info[i]);
+    if (spec == PIDRES_SPECPATH) 
+      exe = dir_from_pid(proc_info[i]);
+    if (spec == PIDRES_SPECBOTH) 
+      exe = path_from_pid(proc_info[i]);
+    if (name == exe || spec == PIDRES_SPECNONE)
+      pids += to_string(proc_info[i]) + "|";
+  }
+  if (pids.back() == '|')
+    pids.pop_back();
+  pids += "\0";
+  return pids;
+}
+
 process_t ppid_from_pid(process_t pid) {
   process_t ppid;
   proc_bsdinfo proc_info;

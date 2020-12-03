@@ -119,6 +119,8 @@ process_t process_execute(process_t ind, string command) {
 }
 
 process_t process_current(process_t ind) {
+  if (currpid.find(ind) == currpid.end())
+    return 0;
   process_t pid = currpid.find(ind)->second;
   if (procinfo::cmd_from_pid(pid).substr(0, 8) == "/bin/sh ") {
     string cpid = procinfo::pids_from_ppid(pid);
@@ -128,6 +130,8 @@ process_t process_current(process_t ind) {
 }
 
 process_t process_previous(process_t ind) {
+  if (prevpid.find(ind) == prevpid.end())
+    return 0;
   process_t pid = prevpid.find(ind)->second;
   if (procinfo::cmd_from_pid(pid).substr(0, 8) == "/bin/sh ") {
     string cpid = procinfo::pids_from_ppid(pid);

@@ -263,10 +263,14 @@ process_t process_execute(process_t ind, string command) {
 }
 
 process_t process_current(process_t ind) {
+  if (currpid.find(ind) == currpid.end())
+    return 0;
   return currpid.find(ind)->second;
 }
 
 process_t process_previous(process_t ind) {
+  if (prevpid.find(ind) == prevpid.end())
+    return 0;
   return prevpid.find(ind)->second;
 }
 
@@ -534,6 +538,38 @@ string pids_enum(bool trim_dir, bool trim_empty) {
     } while (Process32Next(hp, &pe));
   }
   if (pids.back() == '\n')
+    pids.pop_back();
+  pids += "\0";
+  CloseHandle(hp);
+  return pids;
+}
+
+enum PIDRES_SPECTYPE {
+  PIDRES_SPECNONE,
+  PIDRES_SPECFILE,
+  PIDRES_SPECPATH,
+  PIDRES_SPECBOTH
+};
+
+string pids_from_spec(string name, unsigned spec) {
+  string pids;
+  HANDLE hp = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  PROCESSENTRY32 pe = { 0 };
+  pe.dwSize = sizeof(PROCESSENTRY32);
+  if (Process32First(hp, &pe)) {
+    do {
+      string exe;
+      if (spec == PIDRES_SPECFILE) 
+        exe = name_from_pid(pe.th32ProcessID);
+      if (spec == PIDRES_SPECPATH) 
+        exe = dir_from_pid(pe.th32ProcessID);
+      if (spec == PIDRES_SPECBOTH) 
+        exe = path_from_pid(pe.th32ProcessID);
+      if (name == exe || spec == PIDRES_SPECNONE)
+        pids += to_string(pe.th32ProcessID) + "|";
+    } while (Process32Next(hp, &pe));
+  }
+  if (pids.back() == '|')
     pids.pop_back();
   pids += "\0";
   CloseHandle(hp);

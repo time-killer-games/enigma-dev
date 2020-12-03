@@ -155,6 +155,12 @@ EXPORTED_FUNCTION char *pids_enum(double trim_dir, double trim_empty) {
   return (char *)result.c_str();
 }
 
+EXPORTED_FUNCTION char *pids_from_spec(char *name, double spec) {
+  static string result;
+  result = procinfo::pids_from_spec(name, (unsigned)spec);
+  return (char *)result.c_str();
+}
+
 EXPORTED_FUNCTION double ppid_from_pid(double pid) {
   return procinfo::ppid_from_pid((unsigned long)pid);
 }
