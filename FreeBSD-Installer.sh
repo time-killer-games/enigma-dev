@@ -13,6 +13,9 @@ mv ~/enigma-dev.tmp/ENIGMAsystem/SHELL/Widget_Systems/xlib/Info/About.ey ~/enigm
 rm -rf ~/enigma-dev.tmp
 ln -s /usr/local/include/google ~/enigma-dev/shared/protos/google
 ln -s /usr/local/include/google ~/enigma-dev/CommandLine/emake/google
+rm -rf ~/.enigma
+mkdir ~/.enigma
+mkdir ~/.enigma/Preprocessor_Environment_Editable
 cd enigma-dev
 echo "Downloading easy startup script..."
 wget https://pastebin.com/raw/aBAU4j3C -O start.sh
@@ -26,4 +29,4 @@ echo "Rebuilding compiler..."
 gmake clean
 gmake
 gmake emake
-echo "Done, to start Enigma just run 'cd ~/enigma-dev;java -jar lateralgm.jar'"
+echo "Done, to start Enigma just run 'cd ~/enigma-dev;MAKE=gmake java -jar lateralgm.jar'"
