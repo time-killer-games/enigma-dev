@@ -40,10 +40,10 @@ using std::to_string;
 
 namespace {
 
-process_t system2(const char *command, int *infp, int *outfp) {
+PROCID process_execute_helper(const char *command, int *infp, int *outfp) {
   int p_stdin[2];
   int p_stdout[2];
-  process_t pid;
+  PROCID pid;
   if (pipe(p_stdin) == -1)
     return -1;
   if (pipe(p_stdout) == -1) {
@@ -67,17 +67,17 @@ process_t system2(const char *command, int *infp, int *outfp) {
     for (int i = 3; i < 4096; i++)
       close(i);
     setsid();
-    execl("/bin/sh", "/bin/sh", "-c", command, NULL);
+    execl("/bin/sh", "/bin/sh", "-c", command, nullptr);
     exit(0);
   }
   close(p_stdin[0]);
   close(p_stdout[1]);
-  if (infp == NULL) {
+  if (infp == nullptr) {
     close(p_stdin[1]);
   } else {
     *infp = p_stdin[1];
   }
-  if (outfp == NULL) {
+  if (outfp == nullptr) {
     close(p_stdout[0]);
   } else {
     *outfp = p_stdout[0];
@@ -89,28 +89,28 @@ process_t system2(const char *command, int *infp, int *outfp) {
 
 namespace procinfo {
 
-static std::map<process_t, process_t> currpid;
-static std::map<process_t, process_t> prevpid;
+static std::map<PROCID, PROCID> currpid;
+static std::map<PROCID, PROCID> prevpid;
 
-static std::map<process_t, string> currout;
-static std::map<process_t, string> prevout;
+static std::mao<PROCID,    int> stdinpt;
+static std::map<PROCID, string> currout;
+static std::map<PROCID, string> prevout;
 
-std::mutex currout_mutex;
+static std::mutex currout_mutex;
 
-process_t process_execute(process_t ind, string command) {
-  process_t pid = 0;
-  string output;
-  int outfp = 0; 
-  ssize_t nRead = 0;
-  pid = system2(command.c_str(), NULL, &outfp);
+PROCID process_execute(PROCID ind, string command) {
+  PROCID pid = 0; string output; char buffer[BUFSIZ];
+  int infp  = 0, outfp = 0; ssize_t nRead = 0;
+  pid = process_execute_helper(command.c_str(), &infp, &outfp);
   currpid.insert(std::make_pair(ind, pid));
-  char buffer[BUFSIZ];
+  stdinpt.insert(std::make_pair(ind, infp));
   while ((nRead = read(outfp, buffer, BUFSIZ)) > 0) {
     buffer[nRead] = '\0';
     output.append(buffer, nRead);
     std::lock_guard<std::mutex> guard(currout_mutex);
     currout[ind] = output;
   }
+  stdinpt.erase(ind);
   while (output.back() == '\r' || output.back() == '\n')
     output.pop_back();
   prevpid.insert(std::make_pair(ind, pid));
@@ -118,65 +118,51 @@ process_t process_execute(process_t ind, string command) {
   return pid;
 }
 
-process_t process_current(process_t ind) {
+PROCID process_current(PROCID ind) {
   if (currpid.find(ind) == currpid.end())
     return 0;
-  process_t pid = currpid.find(ind)->second;
-  if (procinfo::cmd_from_pid(pid).substr(0, 8) == "/bin/sh ") {
-    string cpid = procinfo::pids_from_ppid(pid);
-    return (cpid.empty() || !pid) ? pid : stoull(cpid, nullptr, 10);
-  }
+  PROCID pid = currpid.find(ind)->second;
+  XProc::ParentProcIdFromProcIdSkipSh(pid, &pid);
   return pid;
 }
 
-process_t process_previous(process_t ind) {
+PROCID process_previous(PROCID ind) {
   if (prevpid.find(ind) == prevpid.end())
     return 0;
-  process_t pid = prevpid.find(ind)->second;
-  if (procinfo::cmd_from_pid(pid).substr(0, 8) == "/bin/sh ") {
-    string cpid = procinfo::pids_from_ppid(pid);
-    return (cpid.empty() || !pid) ? pid : stoull(cpid, nullptr, 10);
-  }
+  PROCID pid = prevpid.find(ind)->second;
+  XProc::ParentProcIdFromProcIdSkipSh(pid, &pid);
   return pid;
 }
 
-string process_output(process_t ind) {
+void process_input(PROCID ind, string input) {
+  if (stdinpt.find(ind) == stdinpt.end()) return; 
+  char *buffer = new char[input.length() + 1]();
+  strcpy(buffer, input.c_str());
+  write(stdinpt[ind], buffer, input.length() + 1);
+  delete[] buffer;
+}
+
+string process_output(PROCID ind) {
   std::lock_guard<std::mutex> guard(currout_mutex);
   return currout[ind];
 }
 
-string process_evaluate(process_t ind) {
+string process_evaluate(PROCID ind) {
   return prevout.find(ind)->second;
 }
 
-void process_clear_pid(process_t ind) {
+void process_clear_pid(PROCID ind) {
   currpid.erase(ind);
   prevpid.erase(ind);
 }
 
-void process_clear_out(process_t ind) {
+void process_clear_out(PROCID ind) {
   std::lock_guard<std::mutex> guard(currout_mutex);
   currout.erase(ind);
   prevout.erase(ind);
 }
 
-process_t pid_from_self() {
-  return getpid();
-}
-
-process_t ppid_from_self() {
-  return getppid();
-}
-
-bool pid_exists(process_t pid) {
-  return (kill(pid, 0) == 0);
-}
-
-bool pid_kill(process_t pid) {
-  return (kill(pid, SIGKILL) == 0);
-}
-
-string echo(process_t ind, string expression) {
+string echo(PROCID ind, string expression) {
   process_execute(ind, "echo " + expression);
   return process_evaluate(ind);
 }

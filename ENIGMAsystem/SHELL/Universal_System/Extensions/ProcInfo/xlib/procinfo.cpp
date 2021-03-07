@@ -99,9 +99,9 @@ wid_t wid_from_window(window_t window) {
   return to_string(reinterpret_cast<unsigned long long>(window));
 }
 
-process_t pid_from_wid(wid_t wid) {
+PROCID pid_from_wid(wid_t wid) {
   SetErrorHandlers();
-  process_t pid; Window window;
+  PROCID pid; Window window;
   window = stoul(wid, nullptr, 10);
   if (!window) return pid;
   Display *display = XOpenDisplay(NULL);
@@ -110,7 +110,7 @@ process_t pid_from_wid(wid_t wid) {
   return pid;
 }
 
-string wids_from_pid(process_t pid) {
+string wids_from_pid(PROCID pid) {
   SetErrorHandlers();
   string result;
   Display *display = XOpenDisplay(NULL);
@@ -151,7 +151,7 @@ wid_t wid_from_top() {
   return wid;
 }
 
-process_t pid_from_top() {
+PROCID pid_from_top() {
   return pid_from_wid(wid_from_top());
 }
 

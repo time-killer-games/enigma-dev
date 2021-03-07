@@ -35,41 +35,46 @@ using std::string;
 #endif
 
 EXPORTED_FUNCTION double process_execute(double ind, char *command) {
-  return (double)procinfo::process_execute((unsigned long)ind, command);
+  return (double)procinfo::process_execute((PROCID)ind, command);
 }
 
 EXPORTED_FUNCTION double process_execute_async(double ind, char *command) {
-  procinfo::process_execute_async((unsigned long)ind, command);
+  procinfo::process_execute_async((PROCID)ind, command);
   return 0;
 }
 
 EXPORTED_FUNCTION double process_current(double ind) {
-  return (double)procinfo::process_current((unsigned long)ind);
+  return (double)procinfo::process_current((PROCID)ind);
 }
 
 EXPORTED_FUNCTION double process_previous(double ind) {
-  return (double)procinfo::process_previous((unsigned long)ind);
+  return (double)procinfo::process_previous((PROCID)ind);
+}
+
+EXPORTED_FUNCTION double process_input(double ind, char *input) {
+  procinfo::process_input((PROCID)ind, input);
+  return 0;
 }
 
 EXPORTED_FUNCTION char *process_output(double ind) {
   static string result;
-  result = procinfo::process_output((unsigned long)ind);
+  result = procinfo::process_output((PROCID)ind);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *process_evaluate(double ind) {
   static string result;
-  result = procinfo::process_evaluate((unsigned long)ind);
+  result = procinfo::process_evaluate((PROCID)ind);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION double process_clear_pid(double ind) {
-  procinfo::process_clear_pid((unsigned long)ind);
+  procinfo::process_clear_pid((PROCID)ind);
   return 0;
 }
 
 EXPORTED_FUNCTION double process_clear_out(double ind) {
-  procinfo::process_clear_out((unsigned long)ind);
+  procinfo::process_clear_out((PROCID)ind);
   return 0;
 }
 
@@ -83,48 +88,48 @@ EXPORTED_FUNCTION double ppid_from_self() {
 
 EXPORTED_FUNCTION char *path_from_pid(double pid) {
   static string result;
-  result = procinfo::path_from_pid((unsigned long)pid);
+  result = procinfo::path_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *dir_from_pid(double pid) {
   static string result;
-  result = procinfo::dir_from_pid((unsigned long)pid);
+  result = procinfo::dir_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *name_from_pid(double pid) {
   static string result;
-  result = procinfo::name_from_pid((unsigned long)pid);
+  result = procinfo::name_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *cmd_from_pid(double pid) {
   static string result;
-  result = procinfo::cmd_from_pid((unsigned long)pid);
+  result = procinfo::cmd_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *env_from_pid(double pid) {
   static string result;
-  result = procinfo::env_from_pid((unsigned long)pid);
+  result = procinfo::env_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *env_from_pid_ext(double pid, char *name) {
   static string result;
-  result = procinfo::env_from_pid_ext((unsigned long)pid, name);
+  result = procinfo::env_from_pid_ext((PROCID)pid, name);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *cwd_from_pid(double pid) {
   static string result;
-  result = procinfo::cwd_from_pid((unsigned long)pid);
+  result = procinfo::cwd_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION double pid_exists(double pid) {
-  return procinfo::pid_exists((unsigned long)pid);
+  return procinfo::pid_exists((PROCID)pid);
 }
 
 EXPORTED_FUNCTION double wid_exists(char *wid) {
@@ -132,7 +137,7 @@ EXPORTED_FUNCTION double wid_exists(char *wid) {
 }
 
 EXPORTED_FUNCTION double pid_kill(double pid) {
-  return procinfo::pid_kill((unsigned long)pid);
+  return procinfo::pid_kill((PROCID)pid);
 }
 
 EXPORTED_FUNCTION void *window_from_wid(char *wid) {
@@ -162,18 +167,18 @@ EXPORTED_FUNCTION char *pids_from_spec(char *name, double spec) {
 }
 
 EXPORTED_FUNCTION double ppid_from_pid(double pid) {
-  return procinfo::ppid_from_pid((unsigned long)pid);
+  return procinfo::ppid_from_pid((PROCID)pid);
 }
 
 EXPORTED_FUNCTION char *pids_from_ppid(double ppid) {
   static string result;
-  result = procinfo::pids_from_ppid((unsigned long)ppid);
+  result = procinfo::pids_from_ppid((PROCID)ppid);
   return (char *)result.c_str();
 }
 
 EXPORTED_FUNCTION char *wids_from_pid(double pid) {
   static string result;
-  result = procinfo::wids_from_pid((unsigned long)pid);
+  result = procinfo::wids_from_pid((PROCID)pid);
   return (char *)result.c_str();
 }
 
