@@ -92,7 +92,7 @@ namespace procinfo {
 static std::map<PROCID, PROCID> currpid;
 static std::map<PROCID, PROCID> prevpid;
 
-static std::mao<PROCID,    int> stdinpt;
+static std::map<PROCID,    int> stdinpt;
 static std::map<PROCID, string> currout;
 static std::map<PROCID, string> prevout;
 

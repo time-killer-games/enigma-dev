@@ -25,11 +25,25 @@
  
 */
 
+#ifndef OS_UNKNOWN
 #define OS_UNKNOWN -1
-#define OS_WINDOWS  0
-#define OS_MACOS    1
-#define OS_LINUX    2
-#define OS_FREEBSD  3
+#endif
+
+#ifndef OS_WINDOWS
+#define OS_WINDOWS 0
+#endif
+
+#ifndef OS_LINUX
+#define OS_LINUX 1
+#endif
+
+#ifndef OS_MACOS
+#define OS_MACOS 2
+#endif
+
+#ifndef OS_FREEBSD
+#define OS_FREEBSD 3
+#endif
 
 #if defined(_WIN32)
 #define OS_PLATFORM OS_WINDOWS
@@ -484,20 +498,6 @@ inline void ParentProcIdFromProcId(PROCID procId, PROCID *parentProcId) {
   #endif
 }
 
-inline void ParentProcIdFromProcIdSkipSh(PROCID procId, PROCID *parentProcId) {
-  char **cmdline; int size;
-  ParentProcIdFromProcId(procId, parentProcId);
-  #if OS_UNIXLIKE == true
-  CmdlineFromProcId(*parentProcId, &cmdline, &size);
-  if (cmdline) {
-    if (strcmp(cmdline[0], "/bin/sh") == 0) {
-      ParentProcIdFromProcIdSkipSh(*parentProcId, parentProcId);
-    }
-    FreeCmdline(cmdline);
-  }
-  #endif
-}
-
 inline void ProcIdFromParentProcId(PROCID parentProcId, PROCID **procId, int *size) {
   std::vector<PROCID> vec; int i = 0;
   #if OS_PLATFORM == OS_WINDOWS
@@ -569,7 +569,7 @@ inline void ExeFromProcId(PROCID procId, char **buffer) {
   }
   #elif OS_PLATFORM == OS_LINUX
   char exe[PATH_MAX]; 
-  std::string symLink = std::string("/proc/") + std::to_string(procId) + std::string("/exe");
+  std::string symLink = "/proc/" + std::to_string(procId) + "/exe";
   if (realpath(symLink.c_str(), exe)) {
     static std::string str; str = exe;
     *buffer = (char *)str.c_str();
@@ -636,7 +636,7 @@ inline void CwdFromProcId(PROCID procId, char **buffer) {
   }
   #elif OS_PLATFORM == OS_LINUX
   char cwd[PATH_MAX];
-  std::string symLink = std::string("/proc/") + std::to_string(procId) + std::string("/cwd");
+  std::string symLink = "/proc/" + std::to_string(procId) + "/cwd";
   if (realpath(symLink.c_str(), cwd)) {
     static std::string str; str = cwd;
     *buffer = (char *)str.c_str();
@@ -717,6 +717,20 @@ inline void CmdlineFromProcId(PROCID procId, char ***buffer, int *size) {
   char **arr = new char *[vec2.size()]();
   std::copy(vec2.begin(), vec2.end(), arr);
   *buffer = arr; *size = i;
+}
+
+inline void ParentProcIdFromProcIdSkipSh(PROCID procId, PROCID *parentProcId) {
+  char **cmdline; int size;
+  ParentProcIdFromProcId(procId, parentProcId);
+  #if OS_UNIXLIKE == true
+  CmdlineFromProcId(*parentProcId, &cmdline, &size);
+  if (cmdline) {
+    if (strcmp(cmdline[0], "/bin/sh") == 0) {
+      ParentProcIdFromProcIdSkipSh(*parentProcId, parentProcId);
+    }
+    FreeCmdline(cmdline);
+  }
+  #endif
 }
 
 inline const char *EnvironmentGetVariable(const char *name) {
