@@ -135,7 +135,7 @@ PROCID process_previous(PROCID ind) {
 }
 
 void process_input(PROCID ind, string input) {
-  if (stdinpt.find(ind) == stdinpt.end()) return; 
+  if (stdinpt.find(ind) == stdinpt.end()) return;
   char *buffer = new char[input.length() + 1]();
   strcpy(buffer, input.c_str());
   write(stdinpt[ind], buffer, input.length() + 1);

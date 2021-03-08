@@ -80,11 +80,11 @@ std::string cmd_from_pid(PROCID pid) {
   if (cmdline) {
     for (int i = 0; i < size; i++) {
       result += "\"" + string_replace_all(cmdline[i], "\"", "\\\"") + "\" ";
-	}
-	if (!result.empty()) {
+    }
+    if (!result.empty()) {
       result.pop_back();
     }
-	XProc::FreeCmdline(cmdline);
+    XProc::FreeCmdline(cmdline);
   }
   return result;
 }
