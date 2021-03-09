@@ -22,4 +22,3 @@ else
 	override LDLIBS += -lole32 -lwbemuuid
 endif
 SOURCES += Universal_System/Extensions/ProcInfo/Universal/procinfo.cpp
-SOURCES += Universal_System/Extensions/ProcInfo/Universal/helpers.cpp
