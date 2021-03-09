@@ -41,8 +41,6 @@ using std::string;
 using std::vector;
 using std::to_string;
 
-namespace {
-
 NSWindow *cocoa_window_from_wid(CGWindowID wid) {
   return [NSApp windowWithWindowNumber:wid];
 }
@@ -175,8 +173,6 @@ void cocoa_wid_set_pwid(CGWindowID wid, CGWindowID pwid) {
   }
 }
 
-} // anonymouse namespace
-
 namespace procinfo {
 
 bool wid_exists(wid_t wid) {
@@ -186,13 +182,13 @@ bool wid_exists(wid_t wid) {
 window_t window_from_wid(wid_t wid) {
   unsigned long ul_wid = stoul(wid, nullptr, 10);
   void *voidp_window = reinterpret_cast<void *>(cocoa_window_from_wid(ul_wid));
-  return reinterpret_cast<std::uintptr_t>(voidp_window);
+  return reinterpret_cast<unsigned long long>(voidp_window);
 }
 
 wid_t wid_from_window(window_t window) {
-  std::uintptr_t ull_window = reinterpret_cast<std::uintptr_t>(window);
+  unsigned long long ull_window = reinterpret_cast<unsigned long long>(window);
   void *voidp_window = reinterpret_cast<void *>(ull_window);
-  return to_string(cocoa_wid_from_window(voidp_window));
+  return to_string(cocoa_wid_from_window(reinterpret_cast<NSWindow *>(voidp_window)));
 }
 
 PROCID pid_from_wid(wid_t wid) {

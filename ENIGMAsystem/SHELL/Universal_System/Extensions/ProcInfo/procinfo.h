@@ -25,7 +25,6 @@
 */
 
 #include "Universal/xproc.h"
-#include "Universal/helpers.h"
 
 // individual platforms need their platform-specific
 // window types casted to an unsigned long long type

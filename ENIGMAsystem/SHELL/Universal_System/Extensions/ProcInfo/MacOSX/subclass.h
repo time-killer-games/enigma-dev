@@ -24,8 +24,8 @@
  
 */
 
-#import <Cocoa/Cocoa.h>
-#import <sys/types.h>
+#include <Cocoa/Cocoa.h>
+#include <sys/types.h>
 
 bool cocoa_wid_exists(CGWindowID wid);
 pid_t cocoa_pid_from_wid(CGWindowID wid);

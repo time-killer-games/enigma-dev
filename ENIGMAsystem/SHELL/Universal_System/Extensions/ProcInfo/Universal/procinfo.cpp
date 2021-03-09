@@ -36,25 +36,6 @@ using std::vector;
 using std::size_t;
 using std::thread;
 
-vector<string> string_split_by_first_equalssign(string str) {
-  size_t pos = 0;
-  vector<string> vec;
-  if ((pos = str.find_first_of("=")) != string::npos) {
-    vec.push_back(str.substr(0, pos));
-    vec.push_back(str.substr(pos + 1));
-  }
-  return vec;
-}
-
-vector<string> string_split(string str, string delimiter) {
-  vector<std::string> vec;
-  std::stringstream sstr(str);
-  string tmp;
-  while (std::getline(sstr, tmp, delimiter[0]))
-    vec.push_back(tmp);
-  return vec;
-}
-
 namespace procinfo {
 
 void process_execute_async(PROCID ind, string command) {
@@ -79,7 +60,7 @@ std::string cmd_from_pid(PROCID pid) {
   XProc::CmdlineFromProcId(pid, &cmdline, &size);
   if (cmdline) {
     for (int i = 0; i < size; i++) {
-      result += "\"" + string_replace_all(cmdline[i], "\"", "\\\"") + "\" ";
+      result += "\"" + StringReplaceAll(cmdline[i], "\"", "\\\"") + "\" ";
     }
     if (!result.empty()) {
       result.pop_back();
@@ -94,10 +75,10 @@ std::string env_from_pid(PROCID pid) {
   XProc::EnvironFromProcId(pid, &environ, &size);
   if (environ) {
     for (int i = 0; i < size; i++) {
-      vector<string> equalssplit = string_split_by_first_equalssign(environ[i]);
+      vector<string> equalssplit = StringSplitByFirstEqualsSign(environ[i]);
       for (int j = 0; j < equalssplit.size(); j++) {
         if (j == equalssplit.size() - 1) {
-          equalssplit[j] = string_replace_all(equalssplit[j], "\"", "\\\"");
+          equalssplit[j] = StringReplaceAll(equalssplit[j], "\"", "\\\"");
           result += equalssplit[0] + "=\"" + equalssplit[j] + "\"\n";
         }
       }
@@ -153,7 +134,7 @@ std::string pids_from_ppid(PROCID ppid) {
 	if (!result.empty()) {
       result.pop_back();
     }
-	free(procId);
+    free(procId);
   }
   return result;
 }
@@ -177,7 +158,7 @@ std::string pids_enum(bool trim_dir, bool trim_empty) {
     if (!result.empty()) {
       result.pop_back();
     }
-	free(procId);
+    free(procId);
   }
   result += "\0";
   return result;
@@ -208,7 +189,7 @@ std::string pids_from_spec(std::string name, int spec) {
     if (!result.empty()) {
       result.pop_back();
     }
-	free(procId);
+    free(procId);
   }
   result += "\0";
   return result;

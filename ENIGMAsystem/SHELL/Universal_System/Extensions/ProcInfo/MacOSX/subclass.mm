@@ -24,10 +24,10 @@
  
 */
 
-#import "subclass.h"
-#import <Cocoa/Cocoa.h>
-#import <sys/types.h>
-#import <unistd.h>
+#include "subclass.h"
+#include <Cocoa/Cocoa.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 CGWindowID cocoa_wid = kCGNullWindowID;
 CGWindowID cocoa_pwid = kCGNullWindowID;

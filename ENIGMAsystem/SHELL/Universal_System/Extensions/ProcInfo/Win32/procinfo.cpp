@@ -39,9 +39,6 @@
 #include <windows.h>
 #undef byte
 
-#include <fcntl.h>
-#include <io.h>
-
 using std::string;
 using std::to_string;
 using std::wstring;
@@ -237,7 +234,7 @@ void wid_set_pwid(wid_t wid, wid_t pwid) {
 
 string echo(PROCID ind, string expression) {
   string result, command = "cmd /c @echo off & echo " + 
-    string_replace_all(expression, "&", "^&");
+    StringReplaceAll(expression, "&", "^&");
   process_execute(ind, command);
   return process_evaluate(ind);
 }
