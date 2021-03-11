@@ -1,4 +1,4 @@
-﻿/*
+/*
 
  MIT License
  
@@ -33,8 +33,6 @@
 // an unsigned long long window identifier placed in
 // quotes for quick concatenation in shell scripting
 #define wid_t std::string
-
-std::vector<std::string> string_split_by_first_equalssign(std::string str);
 
 namespace procinfo {
 
